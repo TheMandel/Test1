@@ -15,6 +15,16 @@
 
 <h1>Zufallsquiz</h1>
 
+<label>Fragenkatalog auswählen:</label>
+<select id="catalog">
+    <option value="LA1.json">LA1</option>
+    <option value="LA2.json">LA2</option>
+    <option value="LA3.json">LA3</option>
+    <option value="LA4.json">LA4</option>
+</select>
+
+<br><br>
+
 <label>Wie viele Fragen möchtest du üben?</label>
 <input type="number" id="count" min="1" value="5">
 <button onclick="startQuiz()">Quiz starten</button>
@@ -28,46 +38,51 @@
 let allQuestions = [];
 let currentQuiz = [];
 
-// JSON laden
-fetch("fragen.json")
-    .then(r => r.json())
-    .then(data => {
-        allQuestions = data;
-        console.log("Fragen geladen:", allQuestions);
-    })
-    .catch(err => console.error("Fehler beim Laden der JSON:", err));
+// JSON laden abhängig vom Dropdown
+function loadCatalog(callback) {
+    const file = document.getElementById("catalog").value;
+
+    fetch(file)
+        .then(r => r.json())
+        .then(data => {
+            allQuestions = data;
+            console.log("Katalog geladen:", file, allQuestions);
+            callback();
+        })
+        .catch(err => console.error("Fehler beim Laden der JSON:", err));
+}
 
 function startQuiz() {
-    const count = parseInt(document.getElementById("count").value);
-    const quizDiv = document.getElementById("quiz");
-    quizDiv.innerHTML = "";
-    document.getElementById("result").innerHTML = "";
-    document.getElementById("checkBtn").style.display = "block";
+    loadCatalog(() => {
+        const count = parseInt(document.getElementById("count").value);
+        const quizDiv = document.getElementById("quiz");
+        quizDiv.innerHTML = "";
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("checkBtn").style.display = "block";
 
-    // Zufällige Fragen auswählen
-    currentQuiz = allQuestions
-        .sort(() => Math.random() - 0.5)
-        .slice(0, count);
+        // Zufällige Fragen auswählen
+        currentQuiz = allQuestions
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count);
 
-    currentQuiz.forEach((q, index) => {
-        const div = document.createElement("div");
-        div.className = "question";
+        currentQuiz.forEach((q, index) => {
+            const div = document.createElement("div");
+            div.className = "question";
 
-        div.innerHTML = `<h3>${index + 1}. ${q.frage}</h3>`;
+            div.innerHTML = `<h3>${index + 1}. ${q.frage}</h3>`;
 
-        q.antworten.forEach((ans, i) => {
-            div.innerHTML += `
-                <label>
-                    <input type="checkbox" name="q${index}" value="${i}">
-                    ${ans.text}
-                </label><br>
-            `;
+            q.antworten.forEach((ans, i) => {
+                div.innerHTML += `
+                    <label>
+                        <input type="checkbox" name="q${index}" value="${i}">
+                        ${ans.text}
+                    </label><br>
+                `;
+            });
+
+            div.innerHTML += `<div id="solution${index}" class="solution"></div>`;
+            quizDiv.appendChild(div);
         });
-
-        // Platz für spätere Lösungsausgabe
-        div.innerHTML += `<div id="solution${index}" class="solution"></div>`;
-
-        quizDiv.appendChild(div);
     });
 }
 
