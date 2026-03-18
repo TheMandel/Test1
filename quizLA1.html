@@ -2,12 +2,13 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Zufallsquiz</title>
+    <title>Quiz</title>
     <style>
         body { font-family: Arial; margin: 20px; }
         .question { margin-bottom: 25px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
         .correct { color: green; font-weight: bold; }
         .wrong { color: red; font-weight: bold; }
+        .solution { margin-top: 5px; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -27,8 +28,8 @@
 let allQuestions = [];
 let currentQuiz = [];
 
-// JSON-Datei laden
-fetch("fragenLA1.json")
+// JSON laden
+fetch("fragen.json")
     .then(r => r.json())
     .then(data => {
         allQuestions = data;
@@ -37,11 +38,6 @@ fetch("fragenLA1.json")
     .catch(err => console.error("Fehler beim Laden der JSON:", err));
 
 function startQuiz() {
-    if (allQuestions.length === 0) {
-        alert("Keine Fragen geladen! Prüfe die JSON-Datei oder den Server.");
-        return;
-    }
-
     const count = parseInt(document.getElementById("count").value);
     const quizDiv = document.getElementById("quiz");
     quizDiv.innerHTML = "";
@@ -68,29 +64,44 @@ function startQuiz() {
             `;
         });
 
+        // Platz für spätere Lösungsausgabe
+        div.innerHTML += `<div id="solution${index}" class="solution"></div>`;
+
         quizDiv.appendChild(div);
     });
 }
 
 function checkAnswers() {
-    if (currentQuiz.length === 0) return;
-
     let correctCount = 0;
 
     currentQuiz.forEach((q, index) => {
         const checkboxes = document.querySelectorAll(`input[name="q${index}"]`);
         let allCorrect = true;
+        let solutionText = "Richtige Antwort(en): ";
+
+        q.antworten.forEach((ans, i) => {
+            if (ans.richtig) {
+                solutionText += ans.text + "; ";
+            }
+        });
 
         checkboxes.forEach((box, i) => {
             const isChecked = box.checked;
             const shouldBeChecked = q.antworten[i].richtig;
 
-            if (isChecked !== shouldBeChecked) {
+            if (isChecked && shouldBeChecked) {
+                box.parentElement.classList.add("correct");
+            } else if (isChecked && !shouldBeChecked) {
+                box.parentElement.classList.add("wrong");
+                allCorrect = false;
+            } else if (!isChecked && shouldBeChecked) {
                 allCorrect = false;
             }
         });
 
         if (allCorrect) correctCount++;
+
+        document.getElementById("solution" + index).innerHTML = solutionText;
     });
 
     document.getElementById("result").innerHTML =
