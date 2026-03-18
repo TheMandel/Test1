@@ -9,6 +9,7 @@
         .correct { color: green; font-weight: bold; }
         .wrong { color: red; font-weight: bold; }
         .solution { margin-top: 5px; font-size: 0.9em; }
+        .qid { font-size: 0.8em; color: #666; }
     </style>
 </head>
 <body>
@@ -46,7 +47,6 @@ function loadCatalog(callback) {
         .then(r => r.json())
         .then(data => {
             allQuestions = data;
-            console.log("Katalog geladen:", file, allQuestions);
             callback();
         })
         .catch(err => console.error("Fehler beim Laden der JSON:", err));
@@ -69,7 +69,10 @@ function startQuiz() {
             const div = document.createElement("div");
             div.className = "question";
 
-            div.innerHTML = `<h3>${index + 1}. ${q.frage}</h3>`;
+            div.innerHTML = `
+                <div class="qid">Frage-ID: ${q.id}</div>
+                <h3>${index + 1}. ${q.frage}</h3>
+            `;
 
             q.antworten.forEach((ans, i) => {
                 div.innerHTML += `
