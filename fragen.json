@@ -1,9 +1,265 @@
 [
   {
-    "frage": "Beispielfrage?",
+    "frage": "Was regelt die Gewerbeordnung (GewO)?",
     "antworten": [
-      { "text": "Antwort A", "richtig": true },
-      { "text": "Antwort B", "richtig": false }
+      { "text": "Die Meisterprüfung im Handwerk", "richtig": false },
+      { "text": "Die Eintragung in die Handwerksrolle", "richtig": false },
+      { "text": "Die Ausübung von Gewerben in Deutschland", "richtig": true },
+      { "text": "Die Regeln für Industrieunternehmen", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Was bedeutet der Grundsatz der Gewerbefreiheit nach § 1 GewO?",
+    "antworten": [
+      { "text": "Gewerbe müssen staatlich genehmigt werden", "richtig": false },
+      { "text": "Nur Meister dürfen ein Gewerbe anmelden", "richtig": false },
+      { "text": "Jeder darf grundsätzlich ein Gewerbe ausüben", "richtig": true },
+      { "text": "Gewerbe sind nur mit Ausnahmebewilligung erlaubt", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Gewerbearten unterscheidet die GewO?",
+    "antworten": [
+      { "text": "Stehendes Gewerbe, Reisegewerbe, Messen/Ausstellungen", "richtig": true },
+      { "text": "Nur handwerkliche Gewerbe", "richtig": false },
+      { "text": "Freie Berufe und Beamtenberufe", "richtig": false },
+      { "text": "Industriegewerbe und Landwirtschaft", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Pflichten entstehen nach der Gewerbeanzeige?",
+    "antworten": [
+      { "text": "Pflicht zur sofortigen Meisterprüfung", "richtig": false },
+      { "text": "Pflichten im Umgang mit Arbeitnehmern", "richtig": true },
+      { "text": "Pflicht zur Eintragung in die IHK", "richtig": false },
+      { "text": "Anzeigepflichten bei Änderungen im Betrieb", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Warum gilt das Handwerk als besondere Form des Gewerbes?",
+    "antworten": [
+      { "text": "Weil Handwerk kein Gewerbe ist", "richtig": false },
+      { "text": "Weil zusätzliche Regelungen der HwO gelten", "richtig": true },
+      { "text": "Weil Handwerker keine Steuern zahlen müssen", "richtig": false },
+      { "text": "Weil Handwerk nur staatlich ausgeübt werden darf", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche drei Gruppen unterscheidet die Handwerksordnung?",
+    "antworten": [
+      { "text": "Meisterberufe, Gesellenberufe, Helferberufe", "richtig": false },
+      { "text": "Zulassungspflichtige Handwerke, zulassungsfreie Handwerke, handwerksähnliche Gewerbe", "richtig": true },
+      { "text": "Gewerbliche, staatliche und private Berufe", "richtig": false },
+      { "text": "Industrieberufe, Handelsberufe, Dienstleistungsberufe", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Gewerbe müssen in die Handwerksrolle eingetragen werden?",
+    "antworten": [
+      { "text": "Zulassungspflichtige Handwerke der Anlage A", "richtig": true },
+      { "text": "Industriebetriebe", "richtig": false },
+      { "text": "Zulassungsfreie Handwerke", "richtig": false },
+      { "text": "Handwerksähnliche Gewerbe", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Gewerbe werden in ein Verzeichnis bei der HWK eingetragen?",
+    "antworten": [
+      { "text": "Zulassungspflichtige Handwerke", "richtig": false },
+      { "text": "Freie Berufe", "richtig": false },
+      { "text": "Zulassungsfreie Handwerke", "richtig": true },
+      { "text": "Handwerksähnliche Gewerbe", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Was versteht man unter wesentlichen Tätigkeiten eines Handwerks?",
+    "antworten": [
+      { "text": "Tätigkeiten, die leicht erlernbar sind", "richtig": false },
+      { "text": "Tätigkeiten, die nur nebenbei ausgeführt werden", "richtig": false },
+      { "text": "Tätigkeiten, die den Kernbereich eines Handwerks ausmachen", "richtig": true },
+      { "text": "Tätigkeiten, die nicht aus einem Handwerk entstanden sind", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Wie viele zulassungspflichtige Handwerke umfasst Anlage A?",
+    "antworten": [
+      { "text": "12", "richtig": false },
+      { "text": "53", "richtig": true },
+      { "text": "75", "richtig": false },
+      { "text": "25", "richtig": false }
+    ]
+  },
+
+  {
+    "frage": "Welche Qualifikation benötigt ein Inhaber für ein zulassungspflichtiges Handwerk?",
+    "antworten": [
+      { "text": "Eine einfache Gewerbeanmeldung", "richtig": false },
+      { "text": "Eine Meisterprüfung oder gleichwertiger Abschluss", "richtig": true },
+      { "text": "Ein Hochschulabschluss in BWL", "richtig": false },
+      { "text": "Eine Ausbildung im Handwerk", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Was ist ein verwandtes Handwerk?",
+    "antworten": [
+      { "text": "Ein Handwerk, das keine Meisterpflicht hat", "richtig": false },
+      { "text": "Ein Handwerk ohne praktische Tätigkeiten", "richtig": false },
+      { "text": "Ein Handwerk, das ähnliche Tätigkeiten umfasst", "richtig": true },
+      { "text": "Ein Handwerk, das nur in der Industrie vorkommt", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Was kann ein Inhaber tun, wenn er keine Meisterqualifikation besitzt?",
+    "antworten": [
+      { "text": "Das Handwerk ohne Einschränkungen ausüben", "richtig": false },
+      { "text": "Eine Ausnahmebewilligung ohne Prüfung erhalten", "richtig": false },
+      { "text": "Einen entsprechend qualifizierten Betriebsleiter einstellen", "richtig": true },
+      { "text": "Das Handwerk nur als Hobby betreiben", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Tätigkeiten fallen zusätzlich unter das zulassungspflichtige Handwerk?",
+    "antworten": [
+      { "text": "Nur theoretische Tätigkeiten", "richtig": false },
+      { "text": "Tätigkeiten aus Anlage B", "richtig": false },
+      { "text": "Alle Tätigkeiten, die leicht erlernbar sind", "richtig": false },
+      { "text": "Wesentliche Tätigkeiten des Handwerks", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Welche Aussage trifft auf zulassungsfreie Handwerke zu?",
+    "antworten": [
+      { "text": "Eine Meisterprüfung ist verpflichtend", "richtig": false },
+      { "text": "Sie dürfen nur mit Ausnahmebewilligung ausgeübt werden", "richtig": false },
+      { "text": "Es ist keine besondere Qualifikation erforderlich", "richtig": true },
+      { "text": "Sie müssen in die Handwerksrolle eingetragen werden", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Wie viele Gewerbe umfasst Anlage B Abschnitt 2?",
+    "antworten": [
+      { "text": "75", "richtig": false },
+      { "text": "51", "richtig": true },
+      { "text": "12", "richtig": false },
+      { "text": "5", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Was kennzeichnet handwerksähnliche Tätigkeiten?",
+    "antworten": [
+      { "text": "Sie sind ausschließlich industrielle Tätigkeiten", "richtig": false },
+      { "text": "Sie erfordern keine besondere Befähigung", "richtig": true },
+      { "text": "Sie sind zulassungspflichtig", "richtig": false },
+      { "text": "Sie dürfen nur von Meistern ausgeübt werden", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Kriterien definieren unwesentliche Tätigkeiten?",
+    "antworten": [
+      { "text": "Besonders komplex", "richtig": false },
+      { "text": "Nebensächlich für das Handwerk", "richtig": true },
+      { "text": "Nicht aus einem Handwerk entstanden", "richtig": true },
+      { "text": "Leicht erlernbar", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Wie wird die Abgrenzung zur Industrie vorgenommen?",
+    "antworten": [
+      { "text": "Durch die Anzahl der Mitarbeiter", "richtig": false },
+      { "text": "Durch die Höhe des Umsatzes", "richtig": false },
+      { "text": "Nur anhand der Gewerbeanmeldung", "richtig": false },
+      { "text": "Nach dem Gesamtbild des Betriebs", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Wer entscheidet über die Kammerzugehörigkeit eines Betriebs?",
+    "antworten": [
+      { "text": "Nur das Finanzamt", "richtig": false },
+      { "text": "Der Gewerbetreibende selbst", "richtig": false },
+      { "text": "Nur die IHK", "richtig": false },
+      { "text": "IHK und HWK gemeinsam mit dem Inhaber", "richtig": true }
+    ]
+  },
+
+  {
+    "frage": "Was ist die Handwerksrolle?",
+    "antworten": [
+      { "text": "Ein Ausbildungsnachweis", "richtig": false },
+      { "text": "Ein Register für Industrieunternehmen", "richtig": false },
+      { "text": "Eine Liste aller Gewerbeanmeldungen", "richtig": false },
+      { "text": "Ein Verzeichnis der zulassungspflichtigen Handwerke", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Für welche Betriebe ist die Eintragung in die Handwerksrolle Pflicht?",
+    "antworten": [
+      { "text": "Für alle Industrieunternehmen", "richtig": false },
+      { "text": "Für alle zulassungsfreien Handwerke", "richtig": false },
+      { "text": "Für zulassungspflichtige Handwerke", "richtig": true },
+      { "text": "Für alle handwerksähnlichen Gewerbe", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Kosten entstehen für die Eintragung in die Handwerksrolle?",
+    "antworten": [
+      { "text": "Es fallen keine Kosten an", "richtig": false },
+      { "text": "Nur bei Meisterpflicht entstehen Kosten", "richtig": false },
+      { "text": "500 € jährlich", "richtig": false },
+      { "text": "150 € einmalig bis zu 3 Handwerke", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Welche Voraussetzungen berechtigen zur Eintragung in die Handwerksrolle?",
+    "antworten": [
+      { "text": "Einfacher Gewerbeschein", "richtig": false },
+      { "text": "Ausübungsberechtigung für Altgesellen", "richtig": true },
+      { "text": "Gleichwertiger Abschluss", "richtig": true },
+      { "text": "Meisterprüfung", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Was versteht man unter unerlaubter Handwerksausübung?",
+    "antworten": [
+      { "text": "Arbeiten ohne Werkzeug", "richtig": false },
+      { "text": "Ausübung eines zulassungspflichtigen Handwerks ohne Eintragung", "richtig": true },
+      { "text": "Arbeiten ohne Rechnung", "richtig": false },
+      { "text": "Ausübung eines Hobbys", "richtig": false }
+    ]
+  },
+  {
+    "frage": "Welche Folgen kann unerlaubte Handwerksausübung haben?",
+    "antworten": [
+      { "text": "Steuerbefreiung", "richtig": false },
+      { "text": "Automatische Eintragung in die HWK", "richtig": false },
+      { "text": "Geldbußen", "richtig": true },
+      { "text": "Betriebsschließung", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Was gilt als Schwarzarbeit nach SchwarzArbG?",
+    "antworten": [
+      { "text": "Arbeiten mit Meisterbrief", "richtig": false },
+      { "text": "Verstoß gegen steuerliche Pflichten", "richtig": true },
+      { "text": "Arbeiten ohne gewerberechtliche Anmeldung", "richtig": true },
+      { "text": "Verstoß gegen sozialversicherungsrechtliche Pflichten", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Welche Bußgelder drohen bei Verstößen gegen die HwO?",
+    "antworten": [
+      { "text": "Bis zu 50.000 €", "richtig": false },
+      { "text": "Nur Verwarnungen", "richtig": false },
+      { "text": "Keine Bußgelder", "richtig": false },
+      { "text": "Bis zu 10.000 €", "richtig": true }
+    ]
+  },
+  {
+    "frage": "Welche zusätzlichen Bußgelder drohen bei Verstößen gegen das Schwarzarbeitsgesetz?",
+    "antworten": [
+      { "text": "Bis zu 100 €", "richtig": false },
+      { "text": "Keine zusätzlichen Bußgelder", "richtig": false },
+      { "text": "Bis zu 5.000 €", "richtig": false },
+      { "text": "Bis zu 50.000 €", "richtig": true }
     ]
   }
 ]
