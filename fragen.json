@@ -1,0 +1,9 @@
+[
+  {
+    "frage": "Beispielfrage?",
+    "antworten": [
+      { "text": "Antwort A", "richtig": true },
+      { "text": "Antwort B", "richtig": false }
+    ]
+  }
+]
