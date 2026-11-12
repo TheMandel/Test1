@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Oberwellen Simulator Pro – unsymmetrisch</title><style>
+:root{font-family:Arial,sans-serif;color:#183047;background:#f3f6f8}body{margin:20px auto;max-width:1250px;padding:0 12px}h1{color:#003366}.card{background:white;padding:18px;border-radius:12px;margin:14px 0;box-shadow:0 2px 8px #0001}fieldset{border:1px solid #ccd8e0;border-radius:8px;margin:12px 0}legend{font-weight:bold}label{display:inline-flex;align-items:center;gap:5px;margin:5px 12px 5px 0}input[type=number]{width:85px;padding:7px;border:1px solid #aebfca;border-radius:5px;font:inherit}button{padding:9px 16px;border:0;border-radius:6px;background:#07588a;color:white;cursor:pointer}button:hover{background:#003d63}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:540px}th,td{padding:9px;border-bottom:1px solid #e1e7ed;text-align:center}th:first-child,td:first-child{text-align:left}thead{background:#eaf1f6}.phase1{color:#c42b2b}.phase2{color:#155cb1}.phase3{color:#ba7000}canvas{display:block;width:100%;height:auto;border:1px solid #ddd;border-radius:5px;background:white}.res{font-size:21px;font-weight:bold;color:#9b1c1c}.hint{color:#526475;font-size:14px;line-height:1.5}.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.metric{padding:12px;background:#f1f6f9;border-radius:8px}.metric strong{display:block;font-size:22px;margin-top:6px}.plotkey{font-size:13px;color:#526475;margin:6px 0 0}
+ .exportbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.exportbar input[type=number]{width:70px}.status{font-size:14px;color:#526475} </style></head><body><h1>Oberwellen- und Neutralleiter-Simulation</h1><p>Unsymmetrische Belastung mit unabhängig einstellbaren Phasenströmen und Oberwellen.</p><div class="card"><label>Grundfrequenz <input id="freq" type="number" min="0.1" max="1000" step="1" value="50"> Hz</label><button id="btn">Animation anhalten</button><button id="reset" style="background:#607788">Standardwerte</button><fieldset><legend>Anzeige</legend><label><input type="checkbox" id="l1" checked>L1</label><label><input type="checkbox" id="l2" checked>L2</label><label><input type="checkbox" id="l3" checked>L3</label><label><input type="checkbox" id="neutral" checked>Neutralleiter</label></fieldset><fieldset><legend>Grundwellenstrom (Effektivwert)</legend><label class="phase1">L1 <input type="number" id="i1" min="0" step="0.1" value="10"> A</label><label class="phase2">L2 <input type="number" id="i2" min="0" step="0.1" value="10"> A</label><label class="phase3">L3 <input type="number" id="i3" min="0" step="0.1" value="10"> A</label></fieldset><fieldset><legend>Oberwellenströme bis zur 21. Ordnung je Phase (Effektivwerte in A)</legend><p class="hint">Jede Oberwelle kann einzeln aktiviert und für L1, L2 und L3 unabhängig eingestellt werden. Die Phasenlage der n-ten Oberwelle folgt n × dem jeweiligen Grundwellenwinkel.</p><div class="tablewrap"><table><thead><tr><th>Aktiv / Ordnung</th><th class="phase1">L1 (A)</th><th class="phase2">L2 (A)</th><th class="phase3">L3 (A)</th></tr></thead><tbody id="harmonics"></tbody></table></div></fieldset><p class="hint">Alle Eingaben sind Zahlenfelder und können direkt überschrieben werden. Ströme werden als Effektivwerte eingegeben; die Kurven zeigen Momentanwerte. Negative Eingaben werden als 0 behandelt.</p></div>
+<div class="card"><h3>Grundwellen</h3><canvas id="c1" width="1200" height="250"></canvas><p class="plotkey">Y-Achse: Strom in A (Momentanwert). X-Achse: Zeit in ms. Automatische Skalierung.</p></div><div class="card"><h3>Oberwellen</h3><canvas id="c2" width="1200" height="250"></canvas><p class="plotkey">Y-Achse: Strom in A (Momentanwert). X-Achse: Zeit in ms. Summe der aktivierten Oberwellen je Phase.</p></div><div class="card"><h3>Neutralleiterstrom (Momentanwert)</h3><canvas id="c3" width="1200" height="250"></canvas><p class="plotkey">Y-Achse: Strom in A (Momentanwert). X-Achse: Zeit in ms. Negative Summe aller drei Phasenströme, einschließlich Grundwellen und Oberwellen.</p></div><div class="card"><h3>Zeigerdiagramm der Grundwellen</h3><canvas id="c4" width="700" height="500" style="max-width:700px"></canvas><p class="plotkey">Achsen: Real- und Imaginärteil in A. Zeigerlängen proportional zu den Grundwellen-Effektivwerten. Der grüne Zeiger zeigt den resultierenden Neutralleiter-Grundwellenstrom.</p></div><div class="card"><h3>Berechnete Effektivströme</h3><div id="metrics" class="results"></div><p id="res" class="res"></p><p class="hint">Der Neutralleiter-Effektivstrom wird aus der quadratischen Summe der komplexen Stromzeiger jeder Frequenz berechnet. Beiträge unterschiedlicher Oberwellenordnungen werden quadratisch addiert (orthogonale Frequenzen), nicht als reine Amplituden addiert. Ideales dreiphasiges Vierleiternetz mit 120° Grundwellenverschiebung; keine zusätzlichen Oberwellen-Phasenwinkel.</p></div>
+<div class="card"><h3>Konfiguration und Animationsexport</h3><div class="exportbar"><button id="saveConfig">Konfiguration exportieren (.json)</button><label><input id="loadConfig" type="file" accept=".json,application/json" hidden><button type="button" id="loadConfigBtn">Konfiguration importieren (.json)</button></label></div><p class="hint">Die JSON-Datei speichert Frequenz, Phasenströme, alle Oberwellenwerte, Aktivierungen und Anzeigeeinstellungen. Beim Import werden die bisherigen Einstellungen ersetzt.</p><div class="exportbar"><button id="saveGif">GIF exportieren</button><button id="saveWebm">WebM exportieren</button><button id="saveMp4">MP4 exportieren</button><label>Bildrate <input type="number" id="gifFps" min="2" max="20" step="1" value="10"> fps</label><label>Dauer <input type="number" id="gifSeconds" min="1" max="8" step="1" value="3"> s</label><label>Auflösung <select id="gifQuality"><option value="1">Standard (640 px)</option><option value="2" selected>Hoch (1280 px)</option><option value="3">Ultra (1920 px)</option><option value="4">Maximum (2560 px)</option></select></label><span class="status" id="exportStatus" role="status"></span></div><p class="hint">GIF (bis 1280 px), WebM und MP4 (bis 2560 px) zeigen die drei Stromdiagramme, das Zeigerdiagramm und die aktiven Einstellungen (Frequenz, Phasenströme, Oberwellen und Neutralleiterstrom). Wähle für schärfere Beschriftungen und Kurven die hohe Auflösung. GIF unterstützt maximal 256 Farben pro Bild. WebM bietet bessere Farben und flüssigere Wiedergabe. MP4 ist abhängig von der Codec-Unterstützung des Browsers; falls MP4 nicht verfügbar ist, erscheint eine entsprechende Meldung. Alle Exporte funktionieren offline.</p></div><script>
+'use strict';
+const orders=[3,5,7,9,11,13,15,17,19,21], colors=['#cf3030','#2464b5','#d28a13'];
+const defaults={3:[1.9,1.9,1.9],5:[1,1,1],7:[0.8,0.8,0.8],9:[0.5,0.5,0.5],11:[0.3,0.3,0.3],13:[0.2,0.2,0.2],15:[0,0,0],17:[0,0,0],19:[0,0,0],21:[0,0,0]};
+const $=id=>document.getElementById(id);
+$('harmonics').innerHTML=orders.map(n=>`<tr><td><label><input type="checkbox" id="h${n}" ${n===3?'checked':''}> ${n}. Oberwelle</label></td>${[0,1,2].map(p=>`<td><input type="number" id="a${n}_${p}" min="0" step="0.1" value="${defaults[n][p]}" aria-label="${n}. Oberwelle L${p+1} in Ampere"></td>`).join('')}</tr>`).join('');
+let t=0,run=true;
+$('btn').onclick=()=>{run=!run;$('btn').textContent=run?'Animation anhalten':'Animation starten'};
+$('reset').onclick=()=>{ $('freq').value=50;[1,2,3].forEach(p=>$('i'+p).value=10);orders.forEach(n=>{$('h'+n).checked=n===3;[0,1,2].forEach(p=>$(`a${n}_${p}`).value=defaults[n][p])});};
+function val(id){const v=Number($(id).value);return Number.isFinite(v)?Math.max(0,v):0}
+function getState(){return {freq:Math.max(0.1,val('freq')),base:[val('i1'),val('i2'),val('i3')],harm:orders.filter(n=>$('h'+n).checked).map(n=>({n,amps:[0,1,2].map(p=>val(`a${n}_${p}`))})),visible:[1,2,3].map(p=>$('l'+p).checked),showN:$('neutral').checked}}
+const phase=[0,-2*Math.PI/3,2*Math.PI/3],sqrt2=Math.sqrt(2);
+function wave(a,p,state,part){let x=0;if(part!=='harm')x+=state.base[p]*Math.sin(a+phase[p]);if(part!=='base')for(const h of state.harm)x+=h.amps[p]*Math.sin(h.n*(a+phase[p]));return sqrt2*x}
+function neutral(a,state){return -[0,1,2].reduce((s,p)=>s+wave(a,p,state,'all'),0)}
+function phasorSum(amps,n){let re=0,im=0;for(let p=0;p<3;p++){re+=amps[p]*Math.cos(n*phase[p]);im+=amps[p]*Math.sin(n*phase[p])}return {re,im,mag:Math.hypot(re,im)}}
+function niceScale(v){if(v<=0)return 1;const magnitude=10**Math.floor(Math.log10(v));const ratio=v/magnitude;return (ratio<=1?1:ratio<=2?2:ratio<=5?5:10)*magnitude}
+function fmt(v){return Number(v.toFixed(4)).toLocaleString('de-DE',{maximumFractionDigits:4})}
+function plot(id,series){
+ const c=$(id),ctx=c.getContext('2d'),w=c.width,h=c.height;
+ const left=82,right=22,top=25,bottom=52,pw=w-left-right,ph=h-top-bottom,mid=top+ph/2;
+ const peak=Math.max(0,...series.flatMap(s=>Array.from({length:361},(_,k)=>Math.abs(s.fn(k/360*2*Math.PI+t)))));
+ const scale=niceScale(Math.max(1,peak*1.08));
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+ ctx.font='13px Arial';ctx.textAlign='right';ctx.textBaseline='middle';
+ for(let j=-2;j<=2;j++){
+   const y=mid-j*ph/4;
+   ctx.strokeStyle=j===0?'#91a2af':'#e5ebef';ctx.lineWidth=j===0?1.5:1;
+   ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+pw,y);ctx.stroke();
+   ctx.fillStyle='#43596a';ctx.fillText(fmt(j*scale/2),left-10,y);
+ }
+ ctx.textAlign='center';ctx.textBaseline='top';
+ for(let k=0;k<=8;k++){
+   const x=left+pw*k/8;
+   ctx.strokeStyle='#e5ebef';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x,top+ph);ctx.stroke();
+   ctx.fillStyle='#43596a';ctx.fillText(fmt(k/8*1000/Math.max(.1,val('freq'))),x,top+ph+8);
+ }
+ ctx.fillStyle='#253e51';ctx.font='bold 14px Arial';ctx.fillText('Zeit [ms] (eine Grundwellenperiode)',left+pw/2,h-19);
+ ctx.save();ctx.translate(18,mid);ctx.rotate(-Math.PI/2);ctx.fillText('Strom [A]',0,0);ctx.restore();
+ for(const s of series){ctx.beginPath();ctx.strokeStyle=s.color;ctx.lineWidth=s.width||2.5;ctx.setLineDash(s.dash?[7,5]:[]);
+ for(let x=0;x<=pw;x++){const a=x/pw*2*Math.PI+t,y=mid-s.fn(a)/scale*(ph/2);if(x===0)ctx.moveTo(left+x,y);else ctx.lineTo(left+x,y)}ctx.stroke()}
+ ctx.setLineDash([]);
+}
+function arrow(ctx,x1,y1,x2,y2,color,label){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const a=Math.atan2(y2-y1,x2-x1);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-12*Math.cos(a-.4),y2-12*Math.sin(a-.4));ctx.lineTo(x2-12*Math.cos(a+.4),y2-12*Math.sin(a+.4));ctx.closePath();ctx.fill();ctx.font='bold 16px Arial';ctx.fillText(label,x2+8,y2-8)}
+function drawPhasors(s){const c=$('c4'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);const max=Math.max(1,...s.base,phasorSum(s.base,1).mag);const radius=195,scale=radius/max,cx=350,cy=250;ctx.fillStyle='#253e51';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.fillText('Imaginärteil [A]',350,18);ctx.fillText('Realteil [A]',610,270);ctx.textAlign='left';ctx.strokeStyle='#ccd6de';ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,radius,0,2*Math.PI);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-radius-20,cy);ctx.lineTo(cx+radius+20,cy);ctx.moveTo(cx,cy-radius-20);ctx.lineTo(cx,cy+radius+20);ctx.stroke();s.base.forEach((v,p)=>{if(!s.visible[p])return;const a=t+phase[p];arrow(ctx,cx,cy,cx+v*scale*Math.cos(a),cy-v*scale*Math.sin(a),colors[p],`L${p+1}: ${v.toFixed(2)} A`)});if(s.showN){const sum=phasorSum(s.base,1),a=t;const re=-sum.re*Math.cos(a)+sum.im*Math.sin(a),im=-sum.re*Math.sin(a)-sum.im*Math.cos(a);arrow(ctx,cx,cy,cx+re*scale,cy-im*scale,'#15945c',`N: ${sum.mag.toFixed(2)} A`)}}
+function animate(){const s=getState();plot('c1',[0,1,2].filter(p=>s.visible[p]).map(p=>({color:colors[p],fn:a=>wave(a,p,s,'base')})));plot('c2',[0,1,2].filter(p=>s.visible[p]).map(p=>({color:colors[p],fn:a=>wave(a,p,s,'harm'),dash:true})));plot('c3',s.showN?[{color:'#15945c',width:3.5,fn:a=>neutral(a,s)}]:[]);drawPhasors(s);
+const phaseRms=s.base.map((v,p)=>Math.sqrt(v*v+s.harm.reduce((sum,h)=>sum+h.amps[p]**2,0)));const fundamental=phasorSum(s.base,1).mag;const parts=s.harm.map(h=>({n:h.n,rms:phasorSum(h.amps,h.n).mag}));const nRms=Math.sqrt(fundamental**2+parts.reduce((sum,h)=>sum+h.rms*h.rms,0));$('metrics').innerHTML=phaseRms.map((v,p)=>`<div class="metric">L${p+1} gesamt<strong style="color:${colors[p]}">${v.toFixed(2)} A</strong></div>`).join('')+`<div class="metric">Neutralleiter gesamt<strong style="color:#15945c">${nRms.toFixed(2)} A</strong></div><div class="metric">Neutralleiter Grundwelle<strong>${fundamental.toFixed(2)} A</strong></div>`+parts.map(h=>`<div class="metric">Neutralleiter ${h.n}. Oberwelle<strong>${h.rms.toFixed(2)} A</strong></div>`).join('');$('res').textContent=`Neutralleiterstrom (Effektivwert): ${nRms.toFixed(2)} A`;if(run)t+=.03*(s.freq/50);requestAnimationFrame(animate)}
+animate();
+
+// Konfiguration: vollständige Werte, auch von deaktivierten Oberwellen.
+function configSnapshot(){return {format:'oberwellen-simulator-pro',version:1,freq:val('freq'),base:[1,2,3].map(p=>val('i'+p)),harmonics:Object.fromEntries(orders.map(n=>[n,{enabled:$('h'+n).checked,amps:[0,1,2].map(p=>val(`a${n}_${p}`))}])),visible:[1,2,3].map(p=>$('l'+p).checked),showNeutral:$('neutral').checked}}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000)}
+$('saveConfig').onclick=()=>downloadBlob(new Blob([JSON.stringify(configSnapshot(),null,2)],{type:'application/json'}),'Oberwellen_Konfiguration.json');
+$('loadConfigBtn').onclick=()=>$('loadConfig').click();
+$('loadConfig').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const cfg=JSON.parse(await file.text());if(cfg.format!=='oberwellen-simulator-pro'||cfg.version!==1||!Number.isFinite(cfg.freq)||cfg.freq<.1||cfg.freq>1000||!Array.isArray(cfg.base)||cfg.base.length!==3||!Array.isArray(cfg.visible)||cfg.visible.length!==3||typeof cfg.showNeutral!=='boolean'||!cfg.harmonics)throw Error('Ungültiges oder nicht unterstütztes Konfigurationsformat.');const okNumber=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0&&x<=1000000;if(!cfg.base.every(okNumber)||!cfg.visible.every(x=>typeof x==='boolean')||!orders.every(n=>{const h=cfg.harmonics[n];return h&&typeof h.enabled==='boolean'&&Array.isArray(h.amps)&&h.amps.length===3&&h.amps.every(okNumber)}))throw Error('Die Datei enthält ungültige Strom- oder Oberwellenwerte.');$('freq').value=cfg.freq;[1,2,3].forEach((p,i)=>{$('i'+p).value=cfg.base[i];$('l'+p).checked=cfg.visible[i]});$('neutral').checked=cfg.showNeutral;orders.forEach(n=>{$('h'+n).checked=cfg.harmonics[n].enabled;[0,1,2].forEach(p=>$(`a${n}_${p}`).value=cfg.harmonics[n].amps[p])});$('exportStatus').textContent='Konfiguration erfolgreich importiert.'}catch(err){$('exportStatus').textContent='Import fehlgeschlagen: '+err.message}finally{e.target.value=''}};
+// Eigenständiger GIF89a-Encoder mit optimierter 256-Farben-Palette (216 RGB-Farben + 40 Graustufen), ohne externe Bibliotheken.
+function gifLzw(indices){const min=8,clear=256,end=257;let dict=new Map(),next=258,size=9,bytes=[],bits=0,bitCount=0;function emit(code){bits|=code<<bitCount;bitCount+=size;while(bitCount>=8){bytes.push(bits&255);bits>>>=8;bitCount-=8}}function reset(){dict=new Map();next=258;size=9}emit(clear);let prefix=indices[0];for(let i=1;i<indices.length;i++){const k=indices[i],key=prefix*256+k,found=dict.get(key);if(found!==undefined){prefix=found;continue}emit(prefix);if(next<4096){dict.set(key,next++);if(next>(1<<size)&&size<12)size++}else{emit(clear);reset()}prefix=k}emit(prefix);emit(end);if(bitCount)bytes.push(bits&255);return bytes}
+function gifEncode(frames,w,h,delay){const out=[];const u16=n=>{out.push(n&255,(n>>8)&255)};const ascii=s=>{for(const c of s)out.push(c.charCodeAt(0))};ascii('GIF89a');u16(w);u16(h);out.push(0xf7,0,0);for(let r=0;r<6;r++)for(let g=0;g<6;g++)for(let b=0;b<6;b++)out.push(r*51,g*51,b*51);for(let k=0;k<40;k++){const v=Math.round(k*255/39);out.push(v,v,v)}out.push(0x21,0xff,11);ascii('NETSCAPE2.0');out.push(3,1,0,0,0);for(const pixels of frames){out.push(0x21,0xf9,4,0x04);u16(delay);out.push(0,0,0x2c);u16(0);u16(0);u16(w);u16(h);out.push(0,8);const compressed=gifLzw(pixels);for(let i=0;i<compressed.length;i+=255){const part=compressed.slice(i,i+255);out.push(part.length,...part)}out.push(0)}out.push(0x3b);return new Blob([new Uint8Array(out)],{type:'image/gif'})}
+function gifFrame(canvas,w,h){const data=canvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;const pixels=new Uint8Array(w*h);for(let i=0,j=0;i<data.length;i+=4,j++){const r=data[i],g=data[i+1],b=data[i+2];const gray=Math.round((r+g+b)/3);const chroma=Math.max(r,g,b)-Math.min(r,g,b);if(chroma<22){pixels[j]=216+Math.min(39,Math.round(gray*39/255))}else{pixels[j]=Math.min(5,Math.round(r/51))*36+Math.min(5,Math.round(g/51))*6+Math.min(5,Math.round(b/51))}}return pixels}
+function compositeFrame(ctx,w,h,s){
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+ ctx.fillStyle='#183047';ctx.font='bold 16px Arial';ctx.fillText('Oberwellen- und Neutralleiter-Simulation',12,22);
+ const ids=['c1','c2','c3','c4'],labels=['Grundwellen','Oberwellen','Neutralleiterstrom','Zeigerdiagramm'];
+ for(let i=0;i<4;i++){const y=32+i*155;ctx.fillStyle='#183047';ctx.font='bold 13px Arial';ctx.fillText(labels[i],12,y+13);const c=$(ids[i]);ctx.drawImage(c,12,y+18,Math.min(610,c.width/c.height*130),130)}
+ const top=662;ctx.fillStyle='#f1f6f9';ctx.fillRect(8,top,624,310);ctx.fillStyle='#183047';ctx.font='bold 15px Arial';ctx.fillText('Aktive Einstellungen (Effektivwerte)',18,top+23);
+ ctx.font='12px Arial';ctx.fillText('Frequenz: '+s.freq.toFixed(2)+' Hz',18,top+45);
+ ctx.fillText('Grundwelle:  L1 '+s.base[0].toFixed(2)+' A   |   L2 '+s.base[1].toFixed(2)+' A   |   L3 '+s.base[2].toFixed(2)+' A',18,top+64);
+ ctx.fillText('Anzeige: '+['L1','L2','L3'].filter((_,p)=>s.visible[p]).join(', ')+(s.showN?', Neutralleiter':''),18,top+83);
+ ctx.font='bold 12px Arial';ctx.fillText('Aktive Oberwellen',18,top+107);
+ ctx.font='11px Arial';ctx.fillText('Ordnung',18,top+125);ctx.fillText('L1 [A]',120,top+125);ctx.fillText('L2 [A]',240,top+125);ctx.fillText('L3 [A]',360,top+125);
+ if(!s.harm.length){ctx.fillText('Keine Oberwellen aktiviert',18,top+146)}
+ s.harm.forEach((h,i)=>{const x=i>=5?330:0,y=top+145+(i%5)*25;ctx.fillStyle='#183047';ctx.fillText(h.n+'.',18+x,y);ctx.fillText(h.amps[0].toFixed(2),90+x,y);ctx.fillText(h.amps[1].toFixed(2),158+x,y);ctx.fillText(h.amps[2].toFixed(2),226+x,y)});
+ const fundamental=phasorSum(s.base,1).mag,nRms=Math.sqrt(fundamental**2+s.harm.reduce((sum,h)=>sum+phasorSum(h.amps,h.n).mag**2,0));
+ ctx.font='bold 12px Arial';ctx.fillStyle='#15945c';ctx.fillText('Neutralleiter gesamt: '+nRms.toFixed(2)+' A RMS',18,top+292);
+}
+$('saveGif').onclick=async()=>{const button=$('saveGif'),status=$('exportStatus');if(button.disabled)return;const fps=Math.max(2,Math.min(20,Math.round(Number($('gifFps').value)||10))),seconds=Math.max(1,Math.min(8,Math.round(Number($('gifSeconds').value)||3))),count=fps*seconds;const scale=Math.max(1,Math.min(4,Number($('gifQuality').value)||2));if(scale>2){status.textContent='GIF ist wegen Speicherbedarf auf 1280 px begrenzt. Für Ultra/Maximum bitte WebM oder MP4 wählen.';return}const w=640*scale,h=990*scale,canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.scale(scale,scale);const previousT=t,previousRun=run;button.disabled=true;run=false;try{const frames=[];for(let i=0;i<count;i++){t=previousT+2*Math.PI*i/count;const s=getState();plot('c1',[0,1,2].filter(p=>s.visible[p]).map(p=>({color:colors[p],fn:a=>wave(a,p,s,'base')})));plot('c2',[0,1,2].filter(p=>s.visible[p]).map(p=>({color:colors[p],fn:a=>wave(a,p,s,'harm'),dash:true})));plot('c3',s.showN?[{color:'#15945c',width:3.5,fn:a=>neutral(a,s)}]:[]);drawPhasors(s);compositeFrame(ctx,640,990,s);frames.push(gifFrame(canvas,w,h));status.textContent=`GIF wird erstellt: ${i+1}/${count} Bilder`;if(i%3===0)await new Promise(resolve=>setTimeout(resolve,0))}status.textContent='GIF wird in hoher Farbqualität komprimiert …';await new Promise(resolve=>setTimeout(resolve,0));downloadBlob(gifEncode(frames,w,h,Math.round(100/fps)),'Oberwellen_Animation.gif');status.textContent='GIF erfolgreich exportiert.'}catch(err){status.textContent='GIF-Export fehlgeschlagen: '+err.message}finally{t=previousT;run=previousRun;button.disabled=false}};
+
+// WebM/MP4: Browser-eigener MediaRecorder. Kein falsches Umbenennen von WebM zu MP4.
+const videoMimeTypes={webm:['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'],mp4:['video/mp4;codecs=avc1.42E01E','video/mp4;codecs=avc1.4D401F','video/mp4']};
+function paintExportFrame(ctx,scale,s){
+ plot('c1',[0,1,2].filter(p=>s.visible[p]).map(p=>({color:colors[p],fn:a=>wave(a,p,s,'base')})));
+ plot('c2',[0,1,2].filter(p=>s.visible[p]).map(p=>({color:colors[p],fn:a=>wave(a,p,s,'harm'),dash:true})));
+ plot('c3',s.showN?[{color:'#15945c',width:3.5,fn:a=>neutral(a,s)}]:[]);
+ drawPhasors(s);ctx.setTransform(scale,0,0,scale,0,0);compositeFrame(ctx,640,990,s);
+}
+async function exportVideo(format){
+ const status=$('exportStatus'),buttons=['saveGif','saveWebm','saveMp4'].map($);
+ if(buttons.some(b=>b.disabled))return;
+ if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){status.textContent='Videoexport wird von diesem Browser nicht unterstützt.';return}
+ const mime=videoMimeTypes[format].find(m=>MediaRecorder.isTypeSupported(m));
+ if(!mime){status.textContent=(format==='mp4'?'MP4':'WebM')+'-Aufnahme wird von diesem Browser nicht unterstützt. Bitte einen anderen Browser oder WebM verwenden.';return}
+ const fps=Math.max(2,Math.min(20,Math.round(Number($('gifFps').value)||10)));
+ const seconds=Math.max(1,Math.min(8,Math.round(Number($('gifSeconds').value)||3)));
+ const scale=Math.max(1,Math.min(4,Number($('gifQuality').value)||2));
+ const canvas=document.createElement('canvas');canvas.width=640*scale;canvas.height=990*scale;
+ const ctx=canvas.getContext('2d',{alpha:false});const stream=canvas.captureStream(0);
+ const track=stream.getVideoTracks()[0];const manual=typeof track.requestFrame==='function';
+ const previousT=t,previousRun=run;run=false;buttons.forEach(b=>b.disabled=true);
+ let recorder;
+ try{
+  const chunks=[];recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:({1:6000000,2:16000000,3:30000000,4:50000000})[scale]});
+  const done=new Promise((resolve,reject)=>{recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};recorder.onerror=e=>reject(e.error||new Error('Recorder-Fehler'));recorder.onstop=resolve});
+  t=previousT;paintExportFrame(ctx,scale,getState());
+  recorder.start();
+  const start=performance.now(),duration=seconds*1000;
+  // Echtzeit-Aufnahme: Recorder erhält korrekt zeitgestempelte Frames.
+  await new Promise(resolve=>{
+   let last=-1;
+   function frame(now){const elapsed=Math.min(now-start,duration),index=Math.min(fps*seconds-1,Math.floor(elapsed*fps/1000));
+    if(index!==last){last=index;t=previousT+2*Math.PI*index/(fps*seconds);paintExportFrame(ctx,scale,getState());if(manual)track.requestFrame();status.textContent=format.toUpperCase()+'-Export: '+Math.round(elapsed/duration*100)+' %'}
+    if(elapsed<duration)requestAnimationFrame(frame);else resolve();
+   }requestAnimationFrame(frame);
+  });
+  recorder.stop();await done;
+  if(!chunks.length)throw new Error('Keine Videodaten aufgenommen.');
+  const blob=new Blob(chunks,{type:recorder.mimeType||mime});
+  const actualMp4=blob.type.toLowerCase().includes('mp4');
+  if(format==='mp4'&&!actualMp4)throw new Error('Browser hat kein MP4 erzeugt. Bitte WebM verwenden.');
+  downloadBlob(blob,'Oberwellen_Animation.'+(actualMp4?'mp4':'webm'));
+  status.textContent=(actualMp4?'MP4':'WebM')+' erfolgreich exportiert.';
+ }catch(err){status.textContent='Videoexport fehlgeschlagen: '+err.message}
+ finally{if(recorder&&recorder.state!=='inactive')recorder.stop();stream.getTracks().forEach(tr=>tr.stop());t=previousT;run=previousRun;buttons.forEach(b=>b.disabled=false)}
+}
+$('saveWebm').onclick=()=>exportVideo('webm');
+$('saveMp4').onclick=()=>exportVideo('mp4');
+
+</script></body></html>
